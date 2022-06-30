@@ -1,6 +1,6 @@
 from rest_framework import viewsets, generics
 from getxml.serializers import BookSerializer
-from .models import Packeage
+from .models import Package
 
 from rest_framework import filters
 from django_filters import rest_framework as filters
@@ -21,11 +21,11 @@ class BookViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows books to be viewed / edited or filtered.
     """
-    queryset = Packeage.objects.all()
+    queryset = Package.objects.all()
     serializer_class = BookSerializer
     filter_backends = (filters.DjangoFilterBackend, SearchFilter, OrderingFilter)
     filter_fields = {'author': ['startswith'], 'title': ['startswith'] ,'pubDate': ['startswith'] }
-    search_fields = ['author', 'title',]
+    search_fields = ['author', 'title', 'description',]
     ordering_fields = ['published_date','id']
 
 class BookYearList(generics.ListAPIView):
@@ -36,7 +36,7 @@ class BookYearList(generics.ListAPIView):
         determined by the year.
         """
         year = self.kwargs['year']
-        return Packeage.objects.filter(published_date = year)
+        return Package.objects.filter(published_date = year)
 
 class BookAuthorList(generics.ListAPIView):
     serializer_class = BookSerializer
@@ -46,7 +46,7 @@ class BookAuthorList(generics.ListAPIView):
         determined by the author name.
         """
         authorname = self.kwargs['authorname']
-        return Packeage.objects.filter(author = authorname)
+        return Package.objects.filter(author = authorname)
 
 class BookAuthorList2(generics.ListAPIView):
     serializer_class = BookSerializer
@@ -59,7 +59,7 @@ class BookAuthorList2(generics.ListAPIView):
         authorname2 = self.kwargs['authorname2']
         print(authorname1)
         print(authorname2)
-        return Packeage.objects.filter(author = authorname1).filter(author = authorname2)
+        return Package.objects.filter(author = authorname1).filter(author = authorname2)
 
 class BookTitleList(generics.ListAPIView):
     serializer_class = BookSerializer
@@ -69,7 +69,7 @@ class BookTitleList(generics.ListAPIView):
         determined by the author name.
         """
         titlename = self.kwargs['titlename']
-        return Packeage.objects.filter(title = titlename)
+        return Package.objects.filter(title = titlename)
 
 def options(request):
     return render(request, 'booksapi/options.html')
@@ -85,11 +85,12 @@ def getdata1(request):
 
     # Create a Django model object for each object in the JSON 
     for book_data in data1['items']:
+        volume_info = book_data['volumeInfo']
         title = volume_info['title']
         authors = volume_info['authors']
         published_date = volume_info['publishedDate']
 
-        book = Packeage.objects.create(
+        book = Package.objects.create(
             title=title,
             author=authors, 
             pubDate=published_date, 
@@ -110,7 +111,7 @@ def getdata2(request):
         authors = volume_info['authors']
         published_date = volume_info['publishedDate']
      
-        book = Packeage.objects.create(
+        book = Package.objects.create(
             title=title,
             author=authors, 
             pubDate=published_date, 
@@ -150,8 +151,8 @@ def getdata3(request):
                 if child.tag == 'description':
                     xc_description = child.text
 
-            book = Packeage.objects.create(
-                author = 'xc_author,',
+            book = Package.objects.create(
+                author = xc_author,
                 title = xc_title,           
                 pubDate = xc_pubDate,
                 link = xc_link,
@@ -190,12 +191,11 @@ def getdata3(request):
            
     return render(request, 'booksapi/data2added.html')
 
-def deletedata2(request):
-    for booksx in Packeage.objects.all():
-        #if booksx.id > 11:
+def deletedata(request):
+    for booksx in Package.objects.all():
             booksx.delete()
     return render(request, 'booksapi/data2deleted.html')
 
 def json(request):
-    data = list(Packeage.objects.values())
+    data = list(Package.objects.values())
     return JsonResponse(data, safe=False)

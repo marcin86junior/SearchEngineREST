@@ -1,6 +1,6 @@
 from django.db import models
 
-class Packeage(models.Model):
+class Package(models.Model):
     title = models.CharField(max_length=50)
     link = models.CharField(max_length=50, blank=True, null=True)
     guid = models.CharField(max_length=50, blank=True, null=True)

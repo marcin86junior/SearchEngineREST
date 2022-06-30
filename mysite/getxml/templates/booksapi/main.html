@@ -118,10 +118,10 @@
 
 
       <big><big><big>
-        <form action="/books" method="GET">
-          <input type="text" id="box" name="search" maxlength="128" placeholder="title or author" autofocus />
+        <form action="/package" method="GET">
+          <input type="text" id="box" name="search" maxlength="128" placeholder="title author description" autofocus />
           <input type="submit" value="Search"/>
-          <input type="submit" value="Author" formaction="/books/" onclick="document.getElementById('box').name='authors__startswith'" />          <!--
+          <input type="submit" value="Author" formaction="/package/" onclick="document.getElementById('box').name='authors__startswith'" />          <!--
           <input type="text" id="box" name="authors__startswith=" maxlength="128" placeholder="title or author" autofocus />
           <input type="submit" value="Search" formaction="/books/" onclick="document.getElementById('box').name='search'" />
           -->
