@@ -1,0 +1,23 @@
+ZADANIE
+
+Korzystając z https://pypi.org/rss/packages.xml napisz aplikację, która raz dziennie pobierze wszystkie informacje o pakietach i zaindeksuje je w dowolnym systemie wyszukiwania pełnotekstowego.
+
+Stwórz w Django wyszukiwarkę pozwalającą wyszukać pakiet w stworzonym indeksie po autorze, mailu autora, opisie pakietu, tytule pakietu, słowach kluczowych, bieżącej wersji i danych osoby utrzymującej pakiet (imię i nazwisko, mail). Wyszukiwarka ma mieć jedno pole input.
+
+Po wyszukaniu danych przedstaw je w paginacji, ustawianej w systemowych zmiennych środowiskowych.
+
+Udokumentuj tą zmienną w README.md
+
+Dane wyświetl w formie estetycznej - czasy czystego HTML mamy już daleko za sobą.
+
+Zadbaj o to by panel administracyjny był wyłączony - nie będziemy go potrzebować.
+
+Zatroszcz się o to, by w przypadku awarii systemu wyszukiwania pełnotekstowego możliwe było jego odtworzenie z bazy danych.
+
+Zadbaj o to, by aplikacja działała niezależnie od systemu operacyjnego (np. w Windows standardowo nie ma poleceń curl lub crontaba).
+
+Rozwiązanie dostarcz w postaci repozytorium github.
+
+Opcjonalnie:
+
+Stwórz JSON API, które umożliwi wyszukanie pakietu dokładnie na takiej samej zasadzie jak wyszukiwarka webowa, z tym, że dane zostaną wysłane do klienta w postaci JSON, a nie HTML.
