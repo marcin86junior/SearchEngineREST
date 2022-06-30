@@ -21,7 +21,7 @@ Installation:
 
 
 	Create new folder "SearchEngineREST" and open it:
-	git clone https://github.com/marcin86junior/PackageSearchEngineREST.git .
+	git clone https://github.com/marcin86junior/SearchEngineREST.git .
 	python -m venv myvenv
 	.\myvenv\Scripts\activate
 	pip install -r requirements.txt
@@ -44,10 +44,10 @@ Docker:
 -------
 
 	Create new folder "SearchEngineREST" and open it:
-	git clone https://github.com/marcin86junior/PackageSearchEngineREST.git .
+	git clone https://github.com/marcin86junior/SearchEngineREST.git .
 	cd mysite\
 	"Open Doker Desktop"
-	"CRLF->LF" in \django_rest_imageupload_backend\docker-entrypoint.sh    
+	"CRLF->LF" in \mysite\docker-entrypoint.sh    
 	docker-compose up
 	http://127.0.0.1:8000/
 	Test:
