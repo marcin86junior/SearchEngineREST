@@ -6,7 +6,7 @@ Stwórz w Django wyszukiwarkę pozwalającą wyszukać pakiet w stworzonym indek
 
 Po wyszukaniu danych przedstaw je w paginacji, ustawianej w systemowych zmiennych środowiskowych.
 
-Udokumentuj tą zmienną w README.md
+Udokumentuj tą zmienną w README.md (tu chodzi pewnie o paginację)
 
 Dane wyświetl w formie estetycznej - czasy czystego HTML mamy już daleko za sobą.
 

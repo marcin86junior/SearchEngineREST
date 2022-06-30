@@ -147,3 +147,16 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
     #'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',)
 }
+
+CELERY_BROKER_URL = "redis://redis:6379"
+CELERY_RESULT_BACKEND = "redis://redis:6379"
+
+from celery.schedules import crontab
+import mysite.tasks
+
+CELERY_BEAT_SCHEDULE = {
+    "sample_task": {
+        "task": "mysite.tasks.sample_task",
+        "schedule": crontab(minute="*/1"),
+    },
+}
