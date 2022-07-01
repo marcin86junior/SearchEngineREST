@@ -107,9 +107,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'pl-pl'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Warsaw'
 
 USE_I18N = True
 
@@ -155,8 +155,18 @@ from celery.schedules import crontab
 import mysite.tasks
 
 CELERY_BEAT_SCHEDULE = {
-    "sample_task": {
+    "collect_data_task": {
+        "task": "mysite.tasks.collect_data_task",
+        "schedule": crontab(minute=0, hour=8), #redis time is -2h (8h->10h)
+        #"schedule": crontab(minute="*/1"), <--- setup for test (every minute)
+    },
+       "backup_task": {
+        "task": "mysite.tasks.backup_task",
+        "schedule": crontab(minute="*/1"),
+    },
+       "sample_task": {
         "task": "mysite.tasks.sample_task",
         "schedule": crontab(minute="*/1"),
     },
 }
+
