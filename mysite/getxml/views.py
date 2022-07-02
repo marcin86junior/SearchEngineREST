@@ -15,7 +15,7 @@ from urllib.request import urlopen
 
 from django.http import JsonResponse
 import json
-
+from .forms import ReadFileForm
 
 class BookViewSet(viewsets.ModelViewSet):
     """
@@ -79,7 +79,7 @@ def main(request):
 
 def getdata1(request):
     url = 'https://www.googleapis.com/books/v1/volumes?q=Hobbit'
-    
+
     # Read the JSON
     data1 = requests.get(url).json()
 
@@ -121,19 +121,14 @@ def getdata2(request):
 
 def getdata3(request):
     url = 'https://www.googleapis.com/books/v1/volumes?q=war'
+
+    # Read the JSON
     data1 = requests.get(url).json()
 
-    
+    # Create a Django model object for each object in the XML 
     with urlopen('https://pypi.org/rss/packages.xml') as f:
         tree = ET.parse(f)
         root = tree.getroot()
-        #print(len(root[0].tag)
-
-        #for child in root[0]:
-        #    print(child.tag, child.attrib)
-
-        #print(len(root[0]))
-        #print('----------------------------')
         xc = 4
         while xc < len(root[0]):
             for child in root[0][xc]:
@@ -150,7 +145,6 @@ def getdata3(request):
                     xc_guid = child.text
                 if child.tag == 'description':
                     xc_description = child.text
-
             book = Package.objects.create(
                 author = xc_author,
                 title = xc_title,           
@@ -158,37 +152,8 @@ def getdata3(request):
                 link = xc_link,
                 guid = xc_guid,
                 description = xc_description,
-                #categories=categoriesx,
-                #average_rating=ratingsCountx,
-                #ratings_count = ratingsCountx,
             )
-            xc = xc + 1 
-    # Read the JSON
-
-
-    '''
-    # Create a Django model object for each object in the JSON 
-    for book_data in data1['items']:
-        volume_info = book_data['volumeInfo']
-        title = volume_info['title']
-        authors = volume_info['authors']
-        published_date = volume_info['publishedDate']
-        categoriesx = volume_info.get("categories", None)
-        averageRatingx = volume_info.get("averageRating", None)
-        ratingsCountx = volume_info.get("ratingsCount", None)
-        thumbnailx = volume_info.get("imageLinks", None)
-        thumbnaily = thumbnailx.get("thumbnail", None)
-     
-        book = books.objects.create(
-            title=title,authors=authors, 
-            published_date=published_date, 
-            categories=categoriesx,
-            average_rating=ratingsCountx,
-            ratings_count = ratingsCountx,
-            thumbnail=thumbnaily,
-           )
-    '''
-           
+            xc = xc + 1        
     return render(request, 'booksapi/data2added.html')
 
 def deletedata(request):
@@ -199,3 +164,36 @@ def deletedata(request):
 def json(request):
     data = list(Package.objects.values())
     return JsonResponse(data, safe=False)
+
+def read_file(request):
+    form = ReadFileForm()
+    if request.method == 'POST':
+        form = ReadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            import json
+            content = request.FILES['file'].read()
+
+            # Read the JSON
+            data  = json.loads(content)
+
+            # Create a Django model object for each object in the JSON 
+            i=0
+            while i < len(data):
+                title_xc = (data[i]['title'])
+                author_xc = (data[i]['author'])
+                pubDate_xc = (data[i]['pubDate'])
+                link_xc = (data[i]['link'])
+                description_xc = (data[i]['description'])
+                guid_xc = (data[i]['guid'])
+            
+                book = Package.objects.create(
+                    title = title_xc,
+                    author = author_xc,
+                    pubDate = pubDate_xc,
+                    link = link_xc,
+                    guid = guid_xc,
+                    description = description_xc
+                )
+                i = i + 1
+            return render(request, 'booksapi/data2added.html')
+    return render(request, 'booksapi/upload.html', locals())

@@ -16,6 +16,7 @@ urlpatterns = [
     path('options/addbooks3/', views.getdata3),
     path('options/deletepackages/', views.deletedata),
     path('options/json/', views.json),
+    path('options/basic-upload/', views.read_file,),
 
     path('bookspublished_date=<year>', views.BookYearList.as_view()),
     path('booksauthor=<authorname>', views.BookAuthorList.as_view()),

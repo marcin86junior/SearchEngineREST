@@ -135,6 +135,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/') # 'data' is my media folder
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
+#rest setup
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
@@ -148,25 +149,32 @@ REST_FRAMEWORK = {
     #'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',)
 }
 
-CELERY_BROKER_URL = "redis://redis:6379"
-CELERY_RESULT_BACKEND = "redis://redis:6379"
-
+#celery setup
 from celery.schedules import crontab
 import mysite.tasks
-
+CELERY_BROKER_URL = "redis://redis:6379"
+CELERY_RESULT_BACKEND = "redis://redis:6379"
 CELERY_BEAT_SCHEDULE = {
-    "collect_data_task": {
+    "collect_data_every_day_at_8": {
         "task": "mysite.tasks.collect_data_task",
-        "schedule": crontab(minute=0, hour=8), #redis time is -2h (8h->10h)
-        #"schedule": crontab(minute="*/1"), <--- setup for test (every minute)
+        "schedule": crontab(minute=0, hour=6), #redis time is -2h (6h->8h in Warsaw)
+        #"schedule": crontab(minute="*/1"), #<--- setup for test (every minute)
     },
-       "backup_task": {
+       "backup_data_every_day_at_22": {
         "task": "mysite.tasks.backup_task",
-        "schedule": crontab(minute="*/1"),
+        "schedule": crontab(minute=0, hour=21), #redis time is -2h (21h->23h in Warsaw)
+        #"schedule": crontab(minute="*/1"), #<--- setup for test (every minute)
     },
-       "sample_task": {
+       "test_task_every_minute": {
         "task": "mysite.tasks.sample_task",
         "schedule": crontab(minute="*/1"),
     },
 }
 
+#email setup
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = "@gmail.com"
+EMAIL_HOST_PASSWORD = ""
