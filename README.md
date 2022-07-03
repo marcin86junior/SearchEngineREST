@@ -45,9 +45,10 @@ Docker:
 
 	Create new folder "SearchEngineREST" and open it:
 	git clone https://github.com/marcin86junior/SearchEngineREST.git .
-	cd mysite\
-	"Open Doker Desktop"
 	"CRLF->LF" in \mysite\docker-entrypoint.sh    
+	Setup email and password in \mysite\\mysite\settings.py (GMAIL req. 2 step password from June 2022)
+	cd mysite\
+	Open Doker Desktop in Windows	
 	docker-compose up
 	http://127.0.0.1:8000/
 	Test:
