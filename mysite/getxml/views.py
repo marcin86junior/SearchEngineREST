@@ -1,5 +1,5 @@
 from rest_framework import viewsets, generics
-from getxml.serializers import BookSerializer
+from getxml.serializers import PackageSerializer
 from .models import Package
 
 from rest_framework import filters
@@ -17,19 +17,19 @@ from django.http import JsonResponse
 import json
 from .forms import ReadFileForm
 
-class BookViewSet(viewsets.ModelViewSet):
+class PackageViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows books to be viewed / edited or filtered.
+    API endpoint that allows package to be viewed or filtered.
     """
     queryset = Package.objects.all()
-    serializer_class = BookSerializer
+    serializer_class = PackageSerializer
     filter_backends = (filters.DjangoFilterBackend, SearchFilter, OrderingFilter)
     filter_fields = {'author': ['startswith'], 'title': ['startswith'] ,'pubDate': ['startswith'] }
     search_fields = ['author', 'title', 'description',]
-    ordering_fields = ['published_date','id']
+    ordering_fields = ['pubDate','id']
 
 class BookYearList(generics.ListAPIView):
-    serializer_class = BookSerializer
+    serializer_class = PackageSerializer
     def get_queryset(self):
         """
         This view should return a list of all the books 
@@ -39,7 +39,7 @@ class BookYearList(generics.ListAPIView):
         return Package.objects.filter(published_date = year)
 
 class BookAuthorList(generics.ListAPIView):
-    serializer_class = BookSerializer
+    serializer_class = PackageSerializer
     def get_queryset(self):
         """
         This view should return a list of all the books 
@@ -49,7 +49,7 @@ class BookAuthorList(generics.ListAPIView):
         return Package.objects.filter(author = authorname)
 
 class BookAuthorList2(generics.ListAPIView):
-    serializer_class = BookSerializer
+    serializer_class = PackageSerializer
     def get_queryset(self):
         """
         This view should return a list of all the books 
@@ -62,7 +62,7 @@ class BookAuthorList2(generics.ListAPIView):
         return Package.objects.filter(author = authorname1).filter(author = authorname2)
 
 class BookTitleList(generics.ListAPIView):
-    serializer_class = BookSerializer
+    serializer_class = PackageSerializer
     def get_queryset(self):
         """
         This view should return a list of all the books 
@@ -77,49 +77,7 @@ def options(request):
 def main(request):
     return render(request, 'booksapi/main.html')
 
-def getdata1(request):
-    url = 'https://www.googleapis.com/books/v1/volumes?q=Hobbit'
-
-    # Read the JSON
-    data1 = requests.get(url).json()
-
-    # Create a Django model object for each object in the JSON 
-    for book_data in data1['items']:
-        volume_info = book_data['volumeInfo']
-        title = volume_info['title']
-        authors = volume_info['authors']
-        published_date = volume_info['publishedDate']
-
-        book = Package.objects.create(
-            title=title,
-            author=authors, 
-            pubDate=published_date, 
-           )
-
-    return render(request, 'booksapi/data1added.html')
-
-def getdata2(request):
-    url = 'https://www.googleapis.com/books/v1/volumes?q=war'
-
-    # Read the JSON
-    data1 = requests.get(url).json()
-
-    # Create a Django model object for each object in the JSON 
-    for book_data in data1['items']:
-        volume_info = book_data['volumeInfo']
-        title = volume_info['title']
-        authors = volume_info['authors']
-        published_date = volume_info['publishedDate']
-     
-        book = Package.objects.create(
-            title=title,
-            author=authors, 
-            pubDate=published_date, 
-           )
-           
-    return render(request, 'booksapi/data2added.html')
-
-def getdata3(request):
+def getpackage(request):
     url = 'https://www.googleapis.com/books/v1/volumes?q=war'
 
     # Read the JSON
@@ -154,18 +112,61 @@ def getdata3(request):
                 description = xc_description,
             )
             xc = xc + 1        
-    return render(request, 'booksapi/data2added.html')
+    return render(request, 'booksapi/data-added.html')
+
+def getdata1(request):
+    url = 'https://www.googleapis.com/books/v1/volumes?q=Hobbit'
+
+    # Read the JSON
+    data1 = requests.get(url).json()
+
+    # Create a Django model object for each object in the JSON 
+    for book_data in data1['items']:
+        volume_info = book_data['volumeInfo']
+        title = volume_info['title']
+        authors = volume_info['authors']
+        published_date = volume_info['publishedDate']
+
+        book = Package.objects.create(
+            title=title,
+            author=authors, 
+            pubDate=published_date, 
+           )
+
+    return render(request, 'booksapi/data-added.html')
+
+def getdata2(request):
+    url = 'https://www.googleapis.com/books/v1/volumes?q=war'
+
+    # Read the JSON
+    data1 = requests.get(url).json()
+
+    # Create a Django model object for each object in the JSON 
+    for book_data in data1['items']:
+        volume_info = book_data['volumeInfo']
+        title = volume_info['title']
+        authors = volume_info['authors']
+        published_date = volume_info['publishedDate']
+     
+        book = Package.objects.create(
+            title=title,
+            author=authors, 
+            pubDate=published_date, 
+           )
+           
+    return render(request, 'booksapi/data-added.html')
 
 def deletedata(request):
     for booksx in Package.objects.all():
             booksx.delete()
-    return render(request, 'booksapi/data2deleted.html')
+    return render(request, 'booksapi/data-deleted.html')
 
 def json(request):
     data = list(Package.objects.values())
     return JsonResponse(data, safe=False)
 
 def read_file(request):
+
     form = ReadFileForm()
     if request.method == 'POST':
         form = ReadFileForm(request.POST, request.FILES)
@@ -176,24 +177,66 @@ def read_file(request):
             # Read the JSON
             data  = json.loads(content)
 
-            # Create a Django model object for each object in the JSON 
-            i=0
-            while i < len(data):
-                title_xc = (data[i]['title'])
-                author_xc = (data[i]['author'])
-                pubDate_xc = (data[i]['pubDate'])
-                link_xc = (data[i]['link'])
-                description_xc = (data[i]['description'])
-                guid_xc = (data[i]['guid'])
-            
-                book = Package.objects.create(
-                    title = title_xc,
-                    author = author_xc,
-                    pubDate = pubDate_xc,
-                    link = link_xc,
-                    guid = guid_xc,
-                    description = description_xc
-                )
-                i = i + 1
-            return render(request, 'booksapi/data2added.html')
+            try:
+                if data[0]['model'] == 'getxml.package':
+                    # Read model objects from JSON recovery email
+                    print("It's recovery file from email")
+                    i=0
+                    while i < len(data):
+                        #print(data[0]['fields'])
+                        title_xc = (data[i]['fields']['title'])
+                        author_xc = (data[i]['fields']['author'])
+                        pubDate_xc = (data[i]['fields']['pubDate'])
+                        link_xc = (data[i]['fields']['link'])
+                        description_xc = (data[i]['fields']['description'])
+                        guid_xc = (data[i]['fields']['guid'])
+                    
+                        book = Package.objects.create(
+                            title = title_xc,
+                            author = author_xc,
+                            pubDate = pubDate_xc,
+                            link = link_xc,
+                            guid = guid_xc,
+                            description = description_xc
+                        )
+                        i = i + 1
+                    return render(request, 'booksapi/data-added.html')
+
+            except:
+                # Read model objects from JSON Options
+                i=0
+                while i < len(data):
+                    title_xc = (data[i]['title'])
+                    author_xc = (data[i]['author'])
+                    pubDate_xc = (data[i]['pubDate'])
+                    link_xc = (data[i]['link'])
+                    description_xc = (data[i]['description'])
+                    guid_xc = (data[i]['guid'])
+                
+                    book = Package.objects.create(
+                        title = title_xc,
+                        author = author_xc,
+                        pubDate = pubDate_xc,
+                        link = link_xc,
+                        guid = guid_xc,
+                        description = description_xc
+                    )
+                    i = i + 1
+                return render(request, 'booksapi/data-added.html')
     return render(request, 'booksapi/upload.html', locals())
+
+from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+class ProfileList(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'booksapi/search.html'
+    serializer_class = PackageSerializer
+    paginate_by = 2
+    paginate_by_param = 'page_size'
+    max_paginate_by = 5
+
+    def get(self, request):
+        queryset = Package.objects.all()
+        return Response({'package': queryset})

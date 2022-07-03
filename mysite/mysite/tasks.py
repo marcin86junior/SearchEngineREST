@@ -1,3 +1,7 @@
+from django.conf import settings
+from django.core.mail import EmailMessage
+from django.core import serializers
+
 from celery import shared_task
 from celery.utils.log import get_task_logger
 
@@ -14,6 +18,8 @@ def sample_task():
 @shared_task
 def collect_data_task():
     from getxml.models import Package
+
+    
     logger.info("Data collected.")
     url = 'https://www.googleapis.com/books/v1/volumes?q=war'
     data1 = requests.get(url).json()
@@ -47,31 +53,26 @@ def collect_data_task():
 
 @shared_task
 def backup_task():
-    from django.conf import settings
-    from django.core.mail import send_mail, EmailMessage
     from getxml.models import Package
 
 
     logger.info("Creating email with backup..")
     subject = "Backup email from SearchEngineREST"
     from_email = settings.EMAIL_HOST_USER
-
-    datax = str(list(Package.objects.values()))
-    
-    import json
-    with open('data.json', 'w', encoding='utf-8') as f:
-        json.dump(datax, f, ensure_ascii=False, indent=4)
-
-    if datax == '[]':
+    data = serializers.serialize("json", Package.objects.all())
+    out = open("data.json", "w")
+    out.write(data)
+    out.close()
+    if data == '[]':
         message = (
-            f"Dear client!\n\nThere is no data in database.")
+            f"Dear client!\n\nThis email is generated automatically. Your app is still is running! There is no data in database.\n\nBest regards\nSearchEngineREST team") #+datax
     else:
         message = (
         f"Dear client!\n\nThis email is generated automatically. Your app is still is running! I'm attaching to letter data.json with backup database.\n\nBest regards\nSearchEngineREST team") #+datax
     
     to = settings.EMAIL_HOST_USER # "abc@gmail.com" or standard from settings.py
-
     '''
+    from django.core.mail import send_mail
     send_mail(
         subject,
         message,
@@ -80,18 +81,18 @@ def backup_task():
         fail_silently=False,
     )
     '''
-
     #import os
     #logger.info(os.getcwd())
     #logger.info(os.listdir()) 
-
     email = EmailMessage(
         subject,
         message,
         from_email,
         to=[to]
     )
-    email.attach_file('data.json')
+    if data == '[]':
+        pass
+    else:
+        email.attach_file('data.json')
     email.send()
-
     logger.info("Finishing email...")

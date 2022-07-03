@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from .models import Package
 
-class BookSerializer(serializers.HyperlinkedModelSerializer):
+class PackageSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Package
         fields = '__all__'

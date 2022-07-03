@@ -3,7 +3,7 @@ from rest_framework import routers
 from getxml import views
 
 router = routers.DefaultRouter()
-router.register(r'package', views.BookViewSet)
+router.register(r'package', views.PackageViewSet)
 
 urlpatterns = [
     path('', views.main),
@@ -11,12 +11,13 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('main/', views.main),
     path('options/', views.options),
+    path('options/addpackage/', views.getpackage),
     path('options/addbooks1/', views.getdata1),
     path('options/addbooks2/', views.getdata2),
-    path('options/addbooks3/', views.getdata3),
     path('options/deletepackages/', views.deletedata),
     path('options/json/', views.json),
     path('options/basic-upload/', views.read_file,),
+    path('searchHTML/', views.ProfileList.as_view(), name='example'),
 
     path('bookspublished_date=<year>', views.BookYearList.as_view()),
     path('booksauthor=<authorname>', views.BookAuthorList.as_view()),

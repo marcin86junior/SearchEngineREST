@@ -108,13 +108,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
 LANGUAGE_CODE = 'pl-pl'
-
 TIME_ZONE = 'Europe/Warsaw'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 
@@ -162,8 +158,8 @@ CELERY_BEAT_SCHEDULE = {
     },
        "backup_data_every_day_at_22": {
         "task": "mysite.tasks.backup_task",
-        "schedule": crontab(minute=0, hour=21), #redis time is -2h (21h->23h in Warsaw)
-        #"schedule": crontab(minute="*/1"), #<--- setup for test (every minute)
+        #"schedule": crontab(minute=0, hour=21), #redis time is -2h (21h->23h in Warsaw)
+        "schedule": crontab(minute="*/1"), #<--- setup for test (every minute)
     },
        "test_task_every_minute": {
         "task": "mysite.tasks.sample_task",
@@ -176,5 +172,6 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = "@gmail.com"
-EMAIL_HOST_PASSWORD = ""
+EMAIL_HOST_USER = "marcin86it@gmail.com"
+EMAIL_HOST_PASSWORD = "warpmqyktbzlixnq"
+
