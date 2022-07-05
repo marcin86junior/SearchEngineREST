@@ -33,18 +33,21 @@ Docker:
 	"CRLF->LF" in \mysite\docker-entrypoint.sh    
 	Please setup email and password in \mysite\mysite\settings.py (GMAIL req. 2 step password from June 2022)
 	Please setup pagination in \mysite\mysite\settings.py -> 'PAGE_SIZE': 10,
-	Run Doker Desktop in Windows	
+	Please setup crontab in \mysite\mysite\settings.py -> now it's 8:00 / 23:00 (you can change to every minute)
+	Run Doker Desktop in Windows.	
 	cd mysite\
 	docker-compose up
 	http://127.0.0.1:8000/
 
-	Docker test:
-
-	I'm  not expert in "testing in docker" but you can add to \mysite\docker-entrypoint.sh after migration. It will show cover in terminal.
+	Docker tests:
+	You can add to \mysite\docker-entrypoint.sh this code:
 	echo "Test website"
 	python manage.py test
 	coverage run --source='.' --omit='*migrations*,*init*,*wsgi*,*asgi*,*urls*,*manage*,*admin*,*apps*,*settings*,*test*,*seriali*' manage.py test
 	coverage report
+	
+	docker-compose up
+	In terminal you will see coverage.
 
 Testing:
 --------
