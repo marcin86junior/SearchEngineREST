@@ -77,7 +77,15 @@ class ViewsTestCase(TestCase):
         response = self.client.get('/searchHTML/') 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Search results')
-    
+
+# my first celery test
+class CeleryTasksTestCase(TestCase):
+ 
+    def test_add_task(self):
+        from mysite.tasks import sample_task
+      
+        response = sample_task.apply(args=(4, 4)).get()
+        self.assertEqual(response, 8)
 
 '''
 # REST tests

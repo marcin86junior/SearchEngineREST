@@ -13,8 +13,9 @@ logger = get_task_logger(__name__)
 
 
 @shared_task
-def sample_task():
+def sample_task(x=2, y=2):
     logger.info("The sample test - task just ran every minute.")
+    return x + y
 
 @shared_task
 def collect_data_task():
