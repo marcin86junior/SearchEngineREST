@@ -8,3 +8,4 @@ class PackageSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
         #read_only_fields = ('author', 'title', 'link', 'guid', 'description', 'pubDate',)
         permission_classes = [IsAuthenticatedOrReadOnly]
+        ordering = ['id']

@@ -1,0 +1,15 @@
+Przyda się w przyszłości:
+
+python manage.py dumpdata imageupload --indent 4 > imageupload\fixtures\data.json    - to nie działało w testach i firefox
+python -Xutf8 manage.py dumpdata -o datafix.json   - to ok - testy odpala bez problemu
+
+w plik json - w notatniku zapisz jako UTF 8 
+https://stackoverflow.com/questions/17843630/python-can-dumpdata-cannot-loaddata-back-unicodedecodeerror
+
+python  manage.py loaddata imageupload\fixtures\data.json --app eMenu
+
+
+For dump users:
+python manage.py dumpdata auth.User --indent 4 > users.json
+
+python manage.py dumpdata auth.Group --indent 4 > group.json

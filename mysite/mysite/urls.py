@@ -17,6 +17,6 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    #path('admin/', admin.site.urls), #admin turned off according to "zadanie: zadbaj o to by panel administracyjny był wyłączony"
     path('', include('getxml.urls')),
 ]

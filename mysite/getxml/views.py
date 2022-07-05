@@ -17,73 +17,41 @@ from django.http import JsonResponse
 import json
 from .forms import ReadFileForm
 
+from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+
+def Main(request):
+    """
+    This view should return main page with searching field.
+    """
+    return render(request, 'booksapi/main.html')
+
 class PackageViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows package to be viewed or filtered.
     """
-    queryset = Package.objects.all()
+    queryset = Package.objects.all().order_by('id')
     serializer_class = PackageSerializer
     filter_backends = (filters.DjangoFilterBackend, SearchFilter, OrderingFilter)
     filter_fields = {'author': ['startswith'], 'title': ['startswith'] ,'pubDate': ['startswith'] }
     search_fields = ['author', 'title', 'description',]
     ordering_fields = ['pubDate','id']
 
-class BookYearList(generics.ListAPIView):
-    serializer_class = PackageSerializer
-    def get_queryset(self):
-        """
-        This view should return a list of all the books 
-        determined by the year.
-        """
-        year = self.kwargs['year']
-        return Package.objects.filter(published_date = year)
-
-class BookAuthorList(generics.ListAPIView):
-    serializer_class = PackageSerializer
-    def get_queryset(self):
-        """
-        This view should return a list of all the books 
-        determined by the author name.
-        """
-        authorname = self.kwargs['authorname']
-        return Package.objects.filter(author = authorname)
-
-class BookAuthorList2(generics.ListAPIView):
-    serializer_class = PackageSerializer
-    def get_queryset(self):
-        """
-        This view should return a list of all the books 
-        determined by the author name 1 or author name 2.
-        """
-        authorname1 = self.kwargs['authorname1']
-        authorname2 = self.kwargs['authorname2']
-        print(authorname1)
-        print(authorname2)
-        return Package.objects.filter(author = authorname1).filter(author = authorname2)
-
-class BookTitleList(generics.ListAPIView):
-    serializer_class = PackageSerializer
-    def get_queryset(self):
-        """
-        This view should return a list of all the books 
-        determined by the author name.
-        """
-        titlename = self.kwargs['titlename']
-        return Package.objects.filter(title = titlename)
-
-def options(request):
+def Options(request):
+    """
+    This view should return options page with data functions: add / delete / search....
+    """
     return render(request, 'booksapi/options.html')
 
-def main(request):
-    return render(request, 'booksapi/main.html')
+def Get_package(request):
+    """
+    This view should get data from:
+    https://pypi.org/rss/packages.xml
+    """
 
-def getpackage(request):
-    url = 'https://www.googleapis.com/books/v1/volumes?q=war'
-
-    # Read the JSON
-    data1 = requests.get(url).json()
-
-    # Create a Django model object for each object in the XML 
+    # Collecting objects from XML 
     with urlopen('https://pypi.org/rss/packages.xml') as f:
         tree = ET.parse(f)
         root = tree.getroot()
@@ -103,6 +71,18 @@ def getpackage(request):
                     xc_guid = child.text
                 if child.tag == 'description':
                     xc_description = child.text
+
+            #sometimes author doesn't exist in XML-package  so it's " "
+            try:
+                xc_author
+            except NameError:
+                print("well, you are lucky - there is no author in XML package - changed to empty field - it happens very rare 1/500")
+                xc_author = ""
+            else:
+                #print("sure, it was defined.")
+                pass
+
+            # adding new package
             book = Package.objects.create(
                 author = xc_author,
                 title = xc_title,           
@@ -114,9 +94,13 @@ def getpackage(request):
             xc = xc + 1        
     return render(request, 'booksapi/data-added.html')
 
-def getdata1(request):
-    url = 'https://www.googleapis.com/books/v1/volumes?q=Hobbit'
+def Get_data1(request):
+    """
+    This view should get data from:
+    https://www.googleapis.com/books/v1/volumes?q=Hobbit
+    """
 
+    url = 'https://www.googleapis.com/books/v1/volumes?q=Hobbit'
     # Read the JSON
     data1 = requests.get(url).json()
 
@@ -135,9 +119,13 @@ def getdata1(request):
 
     return render(request, 'booksapi/data-added.html')
 
-def getdata2(request):
-    url = 'https://www.googleapis.com/books/v1/volumes?q=war'
+def Get_data2(request):
+    """
+    This view should get data from:
+    https://www.googleapis.com/books/v1/volumes?q=war
+    """
 
+    url = 'https://www.googleapis.com/books/v1/volumes?q=war'
     # Read the JSON
     data1 = requests.get(url).json()
 
@@ -156,16 +144,31 @@ def getdata2(request):
            
     return render(request, 'booksapi/data-added.html')
 
-def deletedata(request):
+def Delete_data(request):
+    """
+    This view should delete all data from Package model.
+    """
+
     for booksx in Package.objects.all():
             booksx.delete()
     return render(request, 'booksapi/data-deleted.html')
 
-def json(request):
+def Json(request):
+    """
+    This view should return a list of all the packages in JSON format.
+    In Firefox/Edge you can save it to desktop as a recovery.
+    """
+
     data = list(Package.objects.values())
     return JsonResponse(data, safe=False)
 
-def read_file(request):
+def Read_file(request):
+    """
+    This view collect data from data.json file.
+    There are 2 data.json with diffrent serialization
+    - from email (Celery-Beat)
+    - from Option website
+    """
 
     form = ReadFileForm()
     if request.method == 'POST':
@@ -177,6 +180,7 @@ def read_file(request):
             # Read the JSON
             data  = json.loads(content)
 
+            # try - this data.json is from email
             try:
                 if data[0]['model'] == 'getxml.package':
                     # Read model objects from JSON recovery email
@@ -202,6 +206,7 @@ def read_file(request):
                         i = i + 1
                     return render(request, 'booksapi/data-added.html')
 
+            # excep - this data.json is options website
             except:
                 # Read model objects from JSON Options
                 i=0
@@ -225,18 +230,68 @@ def read_file(request):
                 return render(request, 'booksapi/data-added.html')
     return render(request, 'booksapi/upload.html', locals())
 
-from rest_framework.renderers import TemplateHTMLRenderer
-from rest_framework.response import Response
-from rest_framework.views import APIView
+class PackageList(APIView):
+    """
+    This view should return a list of all the package
+    with renderer_classes = [TemplateHTMLRenderer]
+    """
 
-class ProfileList(APIView):
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'booksapi/search.html'
     serializer_class = PackageSerializer
-    paginate_by = 2
-    paginate_by_param = 'page_size'
-    max_paginate_by = 5
+    #paginate_by = 2
+    #paginate_by_param = 'page_size'
+    #max_paginate_by = 5
 
     def get(self, request):
         queryset = Package.objects.all()
         return Response({'package': queryset})
+
+# below is list of views: in beta version
+
+class PackageYearList(generics.ListAPIView):
+    serializer_class = PackageSerializer
+    def get_queryset(self):
+        """
+        This view should return a list of all the package
+        determined by the year.
+        """
+
+        year = self.kwargs['year']
+        return Package.objects.filter(pubDate = year)
+
+class PackageAuthorList(generics.ListAPIView):
+    serializer_class = PackageSerializer
+    def get_queryset(self):
+        """
+        This view should return a list of all the package 
+        determined by the author name.
+        """
+
+        authorname = self.kwargs['authorname']
+        return Package.objects.filter(author = authorname)
+
+class PackageAuthorList2(generics.ListAPIView):
+    serializer_class = PackageSerializer
+    def get_queryset(self):
+        """
+        This view should return a list of all the package 
+        determined by the author name 1 or author name 2.
+        """
+
+        authorname1 = self.kwargs['authorname1']
+        authorname2 = self.kwargs['authorname2']
+        print(authorname1)
+        print(authorname2)
+        return Package.objects.filter(author = authorname1).filter(author = authorname2)
+
+class PackageTitleList(generics.ListAPIView):
+    serializer_class = PackageSerializer
+    def get_queryset(self):
+        """
+        This view should return a list of all the package 
+        determined by the title name.
+        """
+
+        titlename = self.kwargs['titlename']
+        return Package.objects.filter(title = titlename)
