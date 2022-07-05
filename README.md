@@ -38,8 +38,13 @@ Docker:
 	docker-compose up
 	http://127.0.0.1:8000/
 
-	Tests: I don't know how to run tests it on docker: docker-compose run web python3 manage.py test
-	Tests working fine locally (myvenv). Below there is "Installation (working without celery-beat)"
+	Docker test:
+
+	I'm  not expert in "testing in docker" but you can add to \mysite\docker-entrypoint.sh after migration. It will show cover in terminal.
+	echo "Test website"
+	python manage.py test
+	coverage run --source='.' --omit='*migrations*,*init*,*wsgi*,*asgi*,*urls*,*manage*,*admin*,*apps*,*settings*,*test*,*seriali*' manage.py test
+	coverage report
 
 Testing:
 --------
@@ -72,5 +77,4 @@ Issues
 
 	- (FIXED) There is bug that happens every 1/300. Bug hard to catch. XLM package have no author (xc_author). Now it's fixed to author="".
 	- (FIXED) Redis have diffrent time (-2h). Hours in settings are now -2h so it's correct.
-	- Wrong command in readme for tests in Docker: "docker-compose run web python3 manage.py test"
-
+	- (FIXED) Wrong command in readme for tests in Docker: "docker-compose run web python3 manage.py test". Added test to docker-entrypoint.sh.
