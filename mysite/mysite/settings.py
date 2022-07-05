@@ -124,6 +124,7 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Media and static setup
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
@@ -131,7 +132,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/') # 'data' is my media folder
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
-#rest setup
+#REST setup
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
@@ -145,7 +146,7 @@ REST_FRAMEWORK = {
     #'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',)
 }
 
-#celery setup
+# Celery setup
 from celery.schedules import crontab
 import mysite.tasks
 CELERY_BROKER_URL = "redis://redis:6379"
@@ -158,8 +159,8 @@ CELERY_BEAT_SCHEDULE = {
     },
        "backup_data_every_day_at_22": {
         "task": "mysite.tasks.backup_task",
-        #"schedule": crontab(minute=0, hour=21), #redis time is -2h (21h->23h in Warsaw)
-        "schedule": crontab(minute="*/1"), #<--- setup for test (every minute)
+        "schedule": crontab(minute=0, hour=21), #redis time is -2h (21h->23h in Warsaw)
+        #"schedule": crontab(minute="*/1"), #<--- setup for test (every minute)
     },
        "test_task_every_minute": {
         "task": "mysite.tasks.sample_task",
@@ -167,12 +168,10 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 
-#email setup
+# Email setup
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = "@gmail.com"
 EMAIL_HOST_PASSWORD = ""
-
-

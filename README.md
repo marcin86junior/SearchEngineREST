@@ -6,8 +6,15 @@ SearchEngineREST
 Overview
 --------
 
-SearchEngineREST is a website for checking new python package. 
-Django/REST technology is used for searching in database and recovery.
+SearchEngineREST is a web application for searching latest python package. 
+Django/REST technology is used for searching / database and recovery.
+On "options" site you can: add data, create rocovery file, delete data.
+
+Celery and Celery-beat have now 3 tasks:
+
+	- collecting data at 8:00 (8 AM)
+	- send recovery email with attachment data.json at 23:00 (11 PM) or send information if database is empty
+	- run test_task every minute
 
 Requirements:
 -------------
@@ -24,12 +31,16 @@ Docker:
 	Create new folder "SearchEngineREST" and open it:
 	git clone https://github.com/marcin86junior/SearchEngineREST.git .
 	"CRLF->LF" in \mysite\docker-entrypoint.sh    
-	Setup email and password in \mysite\\mysite\settings.py (GMAIL req. 2 step password from June 2022)
+	Please setup email and password in \mysite\mysite\settings.py (GMAIL req. 2 step password from June 2022)
+	Please setup pagination in \mysite\mysite\settings.py -> 'PAGE_SIZE': 10,
+	Run Doker Desktop in Windows	
 	cd mysite\
-	Open Doker Desktop in Windows	
 	docker-compose up
 	http://127.0.0.1:8000/
-	Test:
+
+	Test - I don't know how to run tests it on docker. Tests working fine locally (myvenv),
+	below is "Installation (working without celery-beat)"
+
 	docker-compose run web python3 manage.py test
 
 Testing:
@@ -39,7 +50,7 @@ Testing:
 	coverage run --source='.' --omit='*migrations*,*init*,*wsgi*,*asgi*,*urls*,*manage*,*admin*,*apps*,*settings*,*test*,*seriali*' manage.py test
 	coverage report (or) coverage html
 
-Installation (not checked):
+Installation (working without celery-beat):
 -------------
 
 	Create new folder "SearchEngineREST" and open it:
@@ -53,9 +64,17 @@ Installation (not checked):
 	python .\manage.py runserver
 	http://127.0.0.1:8000/
 
+	# probably we can run in new terminal celery / celery-beat somehow
+	..........
+
+	python manage.py test 
+
 Issues
 ------
 
 	At the moment there are few issuse:
-	- There is bug that happens every 1/1000 - XLM package have no author (xc_author) - hard to catch - now it's " "
+
+	- There is bug that happens every 1/1000 - XLM package have no author (xc_author) - bug hard to catch - now it's fixed to ""
 	- Redis have diffrent time (-2h)
+	- Wrong command for tests in Docker: docker-compose run web python3 manage.py test
+	- Regresion: searching by author (second button) stoped working but /packageauthor=x@x.pl is still working

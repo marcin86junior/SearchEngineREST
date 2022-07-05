@@ -1,25 +1,22 @@
-from rest_framework import viewsets, generics
-from getxml.serializers import PackageSerializer
-from .models import Package
-
-from rest_framework import filters
-from django_filters import rest_framework as filters
-from rest_framework.filters import SearchFilter, OrderingFilter
-
-from django.shortcuts import render, redirect, render
-import requests
-import xml.etree.ElementTree as ET
-
-from urllib.parse import urlparse
-from urllib.request import urlopen
-
+from django.shortcuts import render, render
 from django.http import JsonResponse
-import json
-from .forms import ReadFileForm
 
+from rest_framework import viewsets, generics
+from rest_framework import filters
+from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+import requests
+import xml.etree.ElementTree as ET
+from urllib.parse import urlparse
+from urllib.request import urlopen
+import json
+
+from getxml.serializers import PackageSerializer
+from .forms import ReadFileForm
+from .models import Package
 
 
 def Main(request):
@@ -34,7 +31,7 @@ class PackageViewSet(viewsets.ModelViewSet):
     """
     queryset = Package.objects.all().order_by('id')
     serializer_class = PackageSerializer
-    filter_backends = (filters.DjangoFilterBackend, SearchFilter, OrderingFilter)
+    filter_backends = (SearchFilter, OrderingFilter)
     filter_fields = {'author': ['startswith'], 'title': ['startswith'] ,'pubDate': ['startswith'] }
     search_fields = ['author', 'title', 'description',]
     ordering_fields = ['pubDate','id']
