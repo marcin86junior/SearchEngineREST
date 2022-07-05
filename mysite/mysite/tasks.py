@@ -11,6 +11,7 @@ from urllib.request import urlopen
 
 logger = get_task_logger(__name__)
 
+
 @shared_task
 def sample_task():
     logger.info("The sample test - task just ran every minute.")
@@ -19,7 +20,6 @@ def sample_task():
 def collect_data_task():
     from getxml.models import Package
 
-    
     logger.info("Data collected.")
     url = 'https://www.googleapis.com/books/v1/volumes?q=war'
     data1 = requests.get(url).json()
@@ -55,14 +55,15 @@ def collect_data_task():
 def backup_task():
     from getxml.models import Package
 
-
     logger.info("Creating email with backup..")
     subject = "Backup email from SearchEngineREST"
     from_email = settings.EMAIL_HOST_USER
     data = serializers.serialize("json", Package.objects.all())
+    
     out = open("data.json", "w")
     out.write(data)
     out.close()
+
     if data == '[]':
         message = (
             f"Dear client!\n\nThis email is generated automatically. Your app is still is running! There is no data in database.\n\nBest regards\nSearchEngineREST team") #+datax
@@ -71,19 +72,6 @@ def backup_task():
         f"Dear client!\n\nThis email is generated automatically. Your app is still is running! I'm attaching to letter data.json with backup database.\n\nBest regards\nSearchEngineREST team") #+datax
     
     to = settings.EMAIL_HOST_USER # "abc@gmail.com" or standard from settings.py
-    '''
-    from django.core.mail import send_mail
-    send_mail(
-        subject,
-        message,
-        from_email,
-        [to],
-        fail_silently=False,
-    )
-    '''
-    #import os
-    #logger.info(os.getcwd())
-    #logger.info(os.listdir()) 
     email = EmailMessage(
         subject,
         message,

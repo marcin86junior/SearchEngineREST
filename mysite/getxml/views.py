@@ -3,6 +3,7 @@ from django.http import JsonResponse
 
 from rest_framework import viewsets, generics
 from rest_framework import filters
+from django_filters import rest_framework as filters
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
@@ -10,9 +11,7 @@ from rest_framework.views import APIView
 
 import requests
 import xml.etree.ElementTree as ET
-from urllib.parse import urlparse
 from urllib.request import urlopen
-import json
 
 from getxml.serializers import PackageSerializer
 from .forms import ReadFileForm
@@ -23,7 +22,8 @@ def Main(request):
     """
     This view should return main page with searching field.
     """
-    return render(request, 'booksapi/main.html')
+
+    return render(request, 'getxml/main.html')
 
 class PackageViewSet(viewsets.ModelViewSet):
     """
@@ -31,7 +31,7 @@ class PackageViewSet(viewsets.ModelViewSet):
     """
     queryset = Package.objects.all().order_by('id')
     serializer_class = PackageSerializer
-    filter_backends = (SearchFilter, OrderingFilter)
+    filter_backends = (filters.DjangoFilterBackend, SearchFilter, OrderingFilter)
     filter_fields = {'author': ['startswith'], 'title': ['startswith'] ,'pubDate': ['startswith'] }
     search_fields = ['author', 'title', 'description',]
     ordering_fields = ['pubDate','id']
@@ -40,7 +40,8 @@ def Options(request):
     """
     This view should return options page with data functions: add / delete / search....
     """
-    return render(request, 'booksapi/options.html')
+    
+    return render(request, 'getxml/options.html')
 
 def Get_package(request):
     """
@@ -69,11 +70,12 @@ def Get_package(request):
                 if child.tag == 'description':
                     xc_description = child.text
 
-            #sometimes author doesn't exist in XML-package  so it's " "
+            # sometimes author doesn't exist in XML-package so it's needs to be setup for author=''
+            # "try / xc_author" checking that xc_author is defined
             try:
                 xc_author
             except NameError:
-                print("well, you are lucky - there is no author in XML package - changed to empty field - it happens very rare 1/500")
+                #print("well, you are lucky - there is no author in XML package - it happens very rare 1/300")
                 xc_author = ""
             else:
                 #print("sure, it was defined.")
@@ -89,7 +91,7 @@ def Get_package(request):
                 description = xc_description,
             )
             xc = xc + 1        
-    return render(request, 'booksapi/data-added.html')
+    return render(request, 'getxml/data-added.html')
 
 def Get_data1(request):
     """
@@ -114,7 +116,7 @@ def Get_data1(request):
             pubDate=published_date, 
            )
 
-    return render(request, 'booksapi/data-added.html')
+    return render(request, 'getxml/data-added.html')
 
 def Get_data2(request):
     """
@@ -139,7 +141,7 @@ def Get_data2(request):
             pubDate=published_date, 
            )
            
-    return render(request, 'booksapi/data-added.html')
+    return render(request, 'getxml/data-added.html')
 
 def Delete_data(request):
     """
@@ -148,9 +150,9 @@ def Delete_data(request):
 
     for booksx in Package.objects.all():
             booksx.delete()
-    return render(request, 'booksapi/data-deleted.html')
+    return render(request, 'getxml/data-deleted.html')
 
-def Json(request):
+def Json_site(request):
     """
     This view should return a list of all the packages in JSON format.
     In Firefox/Edge you can save it to desktop as a recovery.
@@ -201,7 +203,7 @@ def Read_file(request):
                             description = description_xc
                         )
                         i = i + 1
-                    return render(request, 'booksapi/data-added.html')
+                    return render(request, 'getxml/data-added.html')
 
             # excep - this data.json is options website
             except:
@@ -224,8 +226,8 @@ def Read_file(request):
                         description = description_xc
                     )
                     i = i + 1
-                return render(request, 'booksapi/data-added.html')
-    return render(request, 'booksapi/upload.html', locals())
+                return render(request, 'getxml/data-added.html')
+    return render(request, 'getxml/upload.html', locals())
 
 class PackageList(APIView):
     """
@@ -234,7 +236,7 @@ class PackageList(APIView):
     """
 
     renderer_classes = [TemplateHTMLRenderer]
-    template_name = 'booksapi/search.html'
+    template_name = 'getxml/search.html'
     serializer_class = PackageSerializer
     #paginate_by = 2
     #paginate_by_param = 'page_size'

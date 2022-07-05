@@ -16,7 +16,7 @@ urlpatterns = [
     path('options/addbooks1/', views.Get_data1),
     path('options/addbooks2/', views.Get_data2),
     path('options/deletepackages/', views.Delete_data),
-    path('options/json/', views.Json),
+    path('options/json/', views.Json_site),
     path('options/basic-upload/', views.Read_file),
     path('searchHTML/', views.PackageList.as_view()),
 

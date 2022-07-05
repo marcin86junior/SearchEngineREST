@@ -38,10 +38,8 @@ Docker:
 	docker-compose up
 	http://127.0.0.1:8000/
 
-	Test - I don't know how to run tests it on docker. Tests working fine locally (myvenv),
-	below is "Installation (working without celery-beat)"
-
-	docker-compose run web python3 manage.py test
+	Tests: I don't know how to run tests it on docker: docker-compose run web python3 manage.py test
+	Tests working fine locally (myvenv). Below there is "Installation (working without celery-beat)"
 
 Testing:
 --------
@@ -72,9 +70,7 @@ Installation (working without celery-beat):
 Issues
 ------
 
-	At the moment there are few issuse:
+	- (FIXED) There is bug that happens every 1/300. Bug hard to catch. XLM package have no author (xc_author). Now it's fixed to author="".
+	- (FIXED) Redis have diffrent time (-2h). Hours in settings are now -2h so it's correct.
+	- Wrong command in readme for tests in Docker: "docker-compose run web python3 manage.py test"
 
-	- There is bug that happens every 1/1000 - XLM package have no author (xc_author) - bug hard to catch - now it's fixed to ""
-	- Redis have diffrent time (-2h)
-	- Wrong command for tests in Docker: docker-compose run web python3 manage.py test
-	- Regresion: searching by author (second button) stoped working but /packageauthor=x@x.pl is still working

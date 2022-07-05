@@ -83,53 +83,11 @@
       <h1>Welcome on search enginne! &#128214;</h1>
       <p>
       <br>
-      
-        
-        <!--
-        <form action="/books" method="GET"> 
-          <div class="row">
-
-            
-              <div class="input-group">
-                <input type="text" class="form-control" placeholder="Search" id="txtSearch"/>
-                <div class="input-group-btn">
-                  <button class="btn btn-primary" type="submit">Title
-                    <span class="glyphicon glyphicon-search"></span>
-                  </button>
-                  <button class="btn btn-primary" type="submit">Author
-                    <span class="glyphicon glyphicon-search"></span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </form>
-        -->
-      
-        <!--
-        <br>
-        <form action="https://www.youtube.com/results" method="GET">
-          <input type="text" id="box" name="search_query" maxlength="128" placeholder="Type text to be searched here" autofocus />
-          <input type="submit" value="Torrentz" formaction="https://www.torrentz.com/search" onclick="document.getElementById('box').name='q'" />
-          <input type="submit" name="submit" value="Youtube" />
-      </form> -->
-
-
-
-
       <big><big><big>
         <form action="/package" method="GET">
           <input type="text" id="box" name="search" maxlength="128" placeholder="title author description" autofocus />
           <input type="submit" value="Search"/>
-          <input type="submit" value="Author" formaction="/package/" onclick="document.getElementById('box').name='authors__startswith'" />          <!--
-          <input type="text" id="box" name="authors__startswith=" maxlength="128" placeholder="title or author" autofocus />
-          <input type="submit" value="Search" formaction="/books/" onclick="document.getElementById('box').name='search'" />
-          -->
-          <!--
-          <input type="submit" value="Title" formaction="/books/" onclick="document.getElementById('box').name='title__startswith'" />
-          <input type="submit" value="Author" formaction="/books/" onclick="document.getElementById('box').name='authors__startswith'" />
-          <input type="submit" name="submit" value="All keys" />
-          -->
+          <input type="submit" value="Author/Email" formaction="/package/" onclick="document.getElementById('box').name='author__startswith'" />       
       </form>
     </big></big></big>
 
@@ -139,27 +97,7 @@
     </p>
     <p>
     <a href="/options" class="btn btn-primary my-2">Quick search tests / adding and deleting data</a>
-    </p>
-
-              <!-- 
-                <form action="/books" method="get" id="searchForm" class="input-group">
-                    <div class="input-group-btn search-panel">
-                        <select name="fdfd" id="" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                            <option value="all" name="ssssssssssss">All</option>
-                            <option value="username">Author</option>
-                            <option value="email">Title</option>
-                            <option value="email"></option>
-                        </select>
-                    </div>
-                    <input type="text" class="form-control" name="search">
-                    <span class="input-group-btn">
-                        <button class="btn btn-default" type="submit">
-                           <span class="glyphicon glyphicon-search"></span>
-                        </button>
-                    </span>
-                </form>  
-              -->     
-              
+    </p>          
     </div>
   </section>
 
